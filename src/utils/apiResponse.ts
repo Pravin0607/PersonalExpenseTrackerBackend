@@ -1,16 +1,11 @@
 import { Response } from 'express';
 
-// Define a standard format for successful responses
-interface SuccessResponse {
-  success: boolean;
-  data: any;
+function sendApiResponse(res: Response, data: any, statusCode: number, message: string) {
+  res.status(statusCode).json({
+    success: true,
+    message,
+    data
+  });
 }
 
-// Helper function to send successful responses
-export function sendSuccessResponse(res: Response, data: any): void {
-  const response: SuccessResponse = {
-    success: true,
-    data: data
-  };
-  res.json(response);
-}
+export default sendApiResponse;

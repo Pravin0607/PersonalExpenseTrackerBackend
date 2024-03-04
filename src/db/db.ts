@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 
 export default async function connectDB()
 {
-    try{
+    // try{
         await mongoose.connect(`${process.env.MONGODB_URI}`)
         console.log("MongoDB Connected!");
-    }catch(e)
-    {
-        console.log("failed to connect!");
-    }
+    // }catch(e)
+    // {
+    //     console.log("failed to connect!");
+    //     throw
+    // }
 }

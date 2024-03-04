@@ -6,7 +6,7 @@ import app from "./app";
 import connectDB from "./db/db";
 
 
-connectDB().then(()=>{
+connectDB().then((res)=>{
     app.listen(process.env.PORT,()=>{
         console.log("server started at port ",process.env.PORT)
     });    
