@@ -1,12 +1,22 @@
 import {Router } from "express";
-import { authenticateUser, registerUser, deleteUser, updateUser } from "../controllers/user.controller";
+import { authenticateUser, registerUser, deleteUser, updateUser, getUserDetails } from "../controllers/user.controller";
+import { auth } from "../middleware/auth";
 
 const userRouter=Router();
-userRouter.post('/login',authenticateUser)
+
+// userRouter.get('/',);
+
+userRouter.post('/login',authenticateUser);
+
 userRouter.post('/register',registerUser);
 
+userRouter.use(auth);
+
+userRouter.get('/',getUserDetails);
 // incomplete routes
 userRouter.delete('/:id',deleteUser)
-userRouter.patch('/:id',updateUser);
+
+userRouter.patch('/update',updateUser);
+
 
 export {userRouter};

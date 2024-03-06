@@ -78,8 +78,43 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 const updateUser = async (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.send({ message: "User Updated " + id });
+  const userId = req.headers.userId;
+  const {firstName, lastName, email, phoneNo, password} = req.body;
+  try {
+    const user = await User.findById(userId);
+    // console.log("before save ",user);
+    if (user) {
+      user.firstName = firstName;
+      user.lastName = lastName;
+      user.email = email;
+      user.phoneNo = phoneNo;
+      user.password = password;
+     let u1= await user.save();
+    //  console.log("after save ",u1);
+      res.json({ message: "User updated Successfully.", success: true });
+    } else {
+      res.status(404).json({ message: "User not found", success: false });
+    }
+  } catch (error) 
+  {
+    res.status(500).json({ message: "Failed to update user", success: false });
+  }
 };
 
-export { registerUser, deleteUser, authenticateUser, updateUser };
+const getUserDetails = async (req: Request, res: Response) => {
+  const userId = req.headers.userId;
+  console.log(userId);
+  try {
+    const user = await User.findById(userId).select("-password -createdAt -updatedAt");
+    if (user) {
+      res.send({ data: user, success: true });
+    } else {
+      res.status(404).json({ message: "User not found", success: false });
+    }
+  } catch (error) {
+    console.error("Error getting user:", error);
+    res.status(500).json({ message: "Internal server error", success: false });
+  }
+};
+
+export { registerUser, deleteUser, authenticateUser, updateUser ,getUserDetails};

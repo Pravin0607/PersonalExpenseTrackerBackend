@@ -18,7 +18,7 @@ const addExpense=async(req:Request,res:Response)=>{
     const {userId}=req.headers;
     // console.log(req.body);
     const {amount,description,date,selectedCategory:{_id}}=req.body;
-    // res.json({success:true,message:"Expense added successfully"});
+    console.log("add Expense ",date);
     try
     {
         let expense=new Expense({
