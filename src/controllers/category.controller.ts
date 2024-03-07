@@ -9,7 +9,6 @@ const getAllCategories=async(req:Request,res:Response)=>{
         console.log(err);
         res.status(400).json({success:false,message:"Failed to fetch categories"})
     }
-
 }
 
 const createCategory=async(req:Request,res:Response)=>{

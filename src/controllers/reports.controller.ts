@@ -1,5 +1,6 @@
 import { Request,Response } from "express";
 import { Expense, ExpenseDocument } from "../models/expense.model";
+import { start } from "repl";
 
 const getCategoryWiseReportDaywise = async (req: Request, res: Response) => 
 {    
@@ -216,13 +217,12 @@ const getCategoryWiseReportRangedate = async (req: Request, res: Response) => {
   try{
     const userId= req.headers.userId;
     const [startDate, endDate] = req.body.dates;
-    // console.log("start date : ",startDate);
-    // console.log("end date : ",endDate);
     let date1=new Date(startDate);
     let date2=new Date(endDate);
-    // console.log("date1 : ",date1);
-    // console.log("date2 : ",date2);
-    // console.log("checking dates")
+
+    console.log("date1 = ",date1);
+    console.log("date2 = ",date2);
+    // console.log(new Date(date2.getFullYear(), date2.getMonth(), date2.getDate() + 1));
     if (date1.getTime() === date2.getTime()) {
       // console.log("date1 and date2 are the same (same day)");
       req.body.date = date1;
@@ -233,7 +233,9 @@ const getCategoryWiseReportRangedate = async (req: Request, res: Response) => {
         {
           $match: {
             createdBy: userId,
-            date: { $gte: date1, $lt: date2 } // Match within date range
+            date: {   $gte: new Date(date1.getFullYear(), date1.getMonth(), date1.getDate()),
+              $lt: new Date(date2.getFullYear(), date2.getMonth(), date2.getDate() + 1) // Add 1 day to include expenses on date2
+        } // Match within date range
           }
         },
         {
@@ -265,7 +267,7 @@ const getCategoryWiseReportRangedate = async (req: Request, res: Response) => {
     // console.log(categoryReport)
 
     const expenses = await Expense.find({
-      date: { $gte: date1, $lt: date2 },
+      date: { $gte: date1, $lt: new Date(date2.getFullYear(), date2.getMonth(), date2.getDate() + 1) },
       createdBy: userId
     }).populate('categoryId', 'categoryName').sort({date:1});
 
@@ -298,4 +300,151 @@ const getCategoryWiseReportRangedate = async (req: Request, res: Response) => {
 
 }
 
-export { getCategoryWiseReportDaywise , getCategoryWiseReportMonth,getCategoryWiseReportYear,getCategoryWiseReportRangedate};
+const getSummaryReport=async(req:Request,res:Response)=>{
+  const userId=req.headers.userId;
+  let today=new Date();
+  // console.log("today = ",today);
+  today= new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  try{
+    //get total money spen today
+
+    const todayReport = await Expense.aggregate([
+      {
+        $match: {
+          createdBy: userId,
+          date: today
+        }
+      },{
+        $group:{
+          _id:null,
+          totalAmount:{$sum:"$amount"}
+        }
+      },
+      {
+        $project:{
+          _id:0,
+          totalAmount:1
+        }
+      }
+    ]);
+    
+    console.log("today report ",todayReport);
+
+    //get total money spent this month
+   let startDate = new Date(today.getFullYear(), today.getMonth(), 1); // Set start date of the month
+   let endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Set end date of the month (day before next month)
+
+    const thisMonthReport = await Expense.aggregate([
+      {
+        $match: {
+          createdBy: userId,
+          date: { $gte: startDate, $lt: endDate } // Match date between start and end of month
+        }
+      },{
+        $group:{
+          _id:null,
+          totalAmount:{$sum:"$amount"}
+        }
+      },
+      {
+        $project:{
+          _id:0,
+          totalAmount:1
+        }
+      }
+    ]);
+
+    //get total money spent this year
+    let startYear = new Date(today.getFullYear(), 0, 1); // Set start date of the year (Jan 1st)
+    let endYear = new Date(today.getFullYear() + 1, 0, 1); // Set end date of the year (next year's Jan 1st)
+
+    let thisYearReport= await Expense.aggregate([
+      {
+        $match: {
+          createdBy: userId,
+          date: { $gte: startYear, $lt: endYear } // Match date between start and end of month
+        }
+      },{
+        $group:{
+          _id:null,
+          totalAmount:{$sum:"$amount"}
+        }
+      },
+      {
+        $project:{
+          _id:0,
+          totalAmount:1
+        }
+      }
+    ]);
+
+    //get total money spent till today
+    
+    let tillNowReport= await Expense.aggregate([
+      {
+        $match: {
+          createdBy: userId,
+          date: {$lte: today } // Match date between start and end of month
+        }
+      },{
+        $group:{
+          _id:null,
+          totalAmount:{$sum:"$amount"}
+        }
+      },
+      {
+        $project:{
+          _id:0,
+          totalAmount:1
+        }
+      }
+    ]);
+
+    const categoryReporttill = await Expense.aggregate([
+      {
+        $match: {
+          createdBy: userId,
+          date: { $lte: today } // Match date between start and end of year
+        }
+      },
+      {
+        $group: {
+          _id: "$categoryId",
+          totalAmount: { $sum: "$amount" }
+        }
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "category"
+        }
+      },
+      {
+        $unwind: "$category"
+      },
+      {
+        $project: {
+          _id: 0,
+          category: "$category.categoryName",
+          totalAmount: 1
+        }
+      }
+    ]);
+
+    let totalToday= todayReport.length>0?todayReport[0].totalAmount:0;
+    let totalThisMonth= thisMonthReport.length>0?thisMonthReport[0].totalAmount:0;
+    let totalThisYear= thisYearReport.length>0?thisYearReport[0].totalAmount:0;
+    let totalTillNow= tillNowReport.length>0?tillNowReport[0].totalAmount:0;
+    
+    res.status(200).json({success:true,data:{amounts:{totalToday,totalThisMonth,totalThisYear,totalTillNow},categoryReporttill}});
+
+  }catch(err)
+  {
+    console.log(err);
+    res.status(500).json({success:false,message:"Internal Server Error"});  
+  }  
+}
+
+export { getCategoryWiseReportDaywise , getCategoryWiseReportMonth,getCategoryWiseReportYear,getCategoryWiseReportRangedate,getSummaryReport};

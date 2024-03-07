@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { auth } from "../middleware/auth";
-import { getCategoryWiseReportDaywise, getCategoryWiseReportMonth, getCategoryWiseReportRangedate, getCategoryWiseReportYear } from "../controllers/reports.controller";
+import { getCategoryWiseReportDaywise, getCategoryWiseReportMonth, getCategoryWiseReportRangedate, getCategoryWiseReportYear, getSummaryReport } from "../controllers/reports.controller";
 
 const ReportRouter= Router();
 
@@ -15,5 +15,6 @@ ReportRouter.post("/year/",getCategoryWiseReportYear);
 
 ReportRouter.post("/rangedate/",getCategoryWiseReportRangedate);
 
+ReportRouter.get("/summary/",getSummaryReport);
 
 export { ReportRouter};
