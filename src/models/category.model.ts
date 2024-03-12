@@ -6,7 +6,7 @@ interface CategoryDocument extends Document{
 }
 
 const categorySchema = new Schema<CategoryDocument>({
-    categoryName:{type:String,lowercase:true,required:true,unique: true},
+    categoryName:{type:String,lowercase:true,required:true},
     createdBy:{type:Schema.Types.ObjectId,ref:"User",required:true}
 },{timestamps:true});
 
