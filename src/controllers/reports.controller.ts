@@ -331,7 +331,7 @@ const getSummaryReport=async(req:Request,res:Response)=>{
       }
     ]);
     
-    console.log("today report ",todayReport);
+    // console.log("today report ",todayReport);
 
     //get total money spent this month
    let startDate = new Date(today.getFullYear(), today.getMonth(), 1); // Set start date of the month
