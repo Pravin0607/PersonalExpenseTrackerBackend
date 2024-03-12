@@ -4,11 +4,12 @@ import bcrypt from "bcrypt";
 
 const registerUser = async (req: Request, res: Response) => {
   const { firstName, lastName, email, phoneNo, password } = req.body;
-  console.log(req.body);
+  console.log("user request = ",req.body);
   const user = await User.findOne<UserDocument>({
     $or: [{ email }, { phoneNo }],
   });
-  if (user) {
+console.log("user response = ",user);  
+  if (!user) {
     try {
       let created = await User.create({
         firstName,
@@ -30,7 +31,7 @@ const registerUser = async (req: Request, res: Response) => {
       }
     }
   } else {
-    console.log("User already exists.");
+    console.log("User already exists(Email,Phone No).");
     res.status(409).send({ message: "User already exists.", success: false });
   }
 };
@@ -38,7 +39,7 @@ const registerUser = async (req: Request, res: Response) => {
 // function to login user user will provide email and password
 const authenticateUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const user = await User.findOne({ email });
     if (user) {
