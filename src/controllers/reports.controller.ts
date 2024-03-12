@@ -1,9 +1,9 @@
 import { Request,Response } from "express";
-import { Expense, ExpenseDocument } from "../models/expense.model";
-import { start } from "repl";
+import { Expense} from "../models/expense.model";
 
 const getCategoryWiseReportDaywise = async (req: Request, res: Response) => 
 {    
+  console.log("getting daily summary report");
     let date1=new Date(req.body.date);
     const userId= req.headers.userId;
     try{
@@ -70,6 +70,7 @@ const getCategoryWiseReportDaywise = async (req: Request, res: Response) =>
 }
 
 const getCategoryWiseReportMonth = async (req: Request, res: Response) => {
+  console.log("getting monthly summary report")
     let date1 = new Date(req.body.month);
     const userId = req.headers.userId;
   
@@ -143,6 +144,7 @@ const getCategoryWiseReportMonth = async (req: Request, res: Response) => {
 
 
   const getCategoryWiseReportYear = async (req: Request, res: Response) => {
+    console.log("getting yearly summary report")
     let date1 = new Date(req.body.year);
     const userId = req.headers.userId;
   
@@ -213,7 +215,7 @@ const getCategoryWiseReportMonth = async (req: Request, res: Response) => {
   };
   
 const getCategoryWiseReportRangedate = async (req: Request, res: Response) => {
-  
+  console.log("getting range summary report")
   try{
     const userId= req.headers.userId;
     const [startDate, endDate] = req.body.dates;
@@ -301,6 +303,7 @@ const getCategoryWiseReportRangedate = async (req: Request, res: Response) => {
 }
 
 const getSummaryReport=async(req:Request,res:Response)=>{
+  console.log("getting summary report");
   const userId=req.headers.userId;
   let today=new Date();
   // console.log("today = ",today);
