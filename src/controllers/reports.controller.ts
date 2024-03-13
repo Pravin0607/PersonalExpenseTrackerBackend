@@ -135,6 +135,7 @@ const getCategoryWiseReportMonth = async (req: Request, res: Response) => {
         // console.log(data);
         res.status(200).json({success:false,data});
       }
+      console.log("data sent of month : ",{expenses,categoryReport});
 
     } catch (err) {
       console.log(err);
@@ -208,6 +209,7 @@ const getCategoryWiseReportMonth = async (req: Request, res: Response) => {
           // console.log(data);
           res.status(200).json({success:false,data});
         }
+      console.log("data sent of year : ",{expenses,categoryReport});
     } catch (err) {
       console.log(err);
       res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -293,6 +295,7 @@ const getCategoryWiseReportRangedate = async (req: Request, res: Response) => {
       // console.log(data);
       res.status(200).json({success:false,data});
     }
+    console.log("data sent of range : ",{expenses,categoryReport});
 
 }catch(err)
 {

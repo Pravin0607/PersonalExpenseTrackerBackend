@@ -4,11 +4,11 @@ import bcrypt from "bcrypt";
 
 const registerUser = async (req: Request, res: Response) => {
   const { firstName, lastName, email, phoneNo, password } = req.body;
-  console.log("user request = ",req.body);
+  // console.log("user request = ",req.body);
   const user = await User.findOne<UserDocument>({
     $or: [{ email }, { phoneNo }],
   });
-console.log("user response = ",user);  
+// console.log("user response = ",user);  
   if (!user) {
     try {
       let created = await User.create({
@@ -44,7 +44,7 @@ const authenticateUser = async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
-      console.log(isMatch);
+      // console.log(isMatch);
       if (isMatch) {
         const token = user.generateToken();
         res.send({
@@ -104,7 +104,7 @@ const updateUser = async (req: Request, res: Response) => {
 
 const getUserDetails = async (req: Request, res: Response) => {
   const userId = req.headers.userId;
-  console.log(userId);
+  // console.log(userId);
   try {
     const user = await User.findById(userId).select("-password -createdAt -updatedAt");
     if (user) {
