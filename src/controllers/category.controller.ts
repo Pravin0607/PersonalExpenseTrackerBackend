@@ -15,13 +15,17 @@ const createCategory=async(req:Request,res:Response)=>{
     let {categoryName}=req.body;
     categoryName=categoryName.toLowerCase();
     console.log("cat is",categoryName)
+    console.log("user id is",req.headers.userId);
+
     try{
+        console.log("finding category with name");
         let catAvailable=await Category.findOne({categoryName, createdBy: req.headers.userId});
         if(catAvailable)
         {
             console.error("duplicate category name");
             return res.status(400).json({success:false,message:"Category creation failed due to duplicate category name"})
         }
+        console.log("creating category");
         let cat=await Category.create({categoryName,createdBy:req.headers.userId});
         res.json({success:true,message:"Category created successfully",data:cat});
     }catch(err)
