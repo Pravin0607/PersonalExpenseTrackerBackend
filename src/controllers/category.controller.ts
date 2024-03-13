@@ -12,10 +12,11 @@ const getAllCategories=async(req:Request,res:Response)=>{
 }
 
 const createCategory=async(req:Request,res:Response)=>{
-    const {categoryName}=req.body;
+    let {categoryName}=req.body;
+    categoryName=categoryName.toLowerCase();
     console.log("cat is",categoryName)
     try{
-        let catAvailable=await Category.findOne({categoryName,createdBy:req.headers.userId});
+        let catAvailable=await Category.findOne({categoryName, createdBy: req.headers.userId});
         if(catAvailable)
         {
             console.error("duplicate category name");
@@ -25,8 +26,8 @@ const createCategory=async(req:Request,res:Response)=>{
         res.json({success:true,message:"Category created successfully",data:cat});
     }catch(err)
     {
-        console.error("duplicate category name");
-        res.status(400).json({success:false,message:"Category creation failed due to duplicate category name or server error"})
+        console.error("Error in category creation");
+        res.status(400).json({success:false,message:"Category creation failed due to server error"})
     }
 }
 
