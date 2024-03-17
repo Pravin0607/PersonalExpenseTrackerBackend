@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { User, UserDocument } from "../models/user.model";
 import bcrypt from "bcrypt";
+import { Category } from "../models/category.model";
+import { Expense } from "../models/expense.model";
 
 const registerUser = async (req: Request, res: Response) => {
   const { firstName, lastName, email, phoneNo, password } = req.body;
@@ -69,11 +71,19 @@ const authenticateUser = async (req: Request, res: Response) => {
 };
 
 const deleteUser = async (req: Request, res: Response) => {
-  const id = req.params.id;
+  // const id = req.params.id;
+  const userId=req.headers.userId;
   try {
-    await User.findByIdAndDelete(id);
-    res.send({ message: "User with " + id + " deleted", success: true });
+
+    // delete user and associated categories and expenses
+    await User.findByIdAndDelete(userId);
+    await Category.deleteMany({ createdBy: userId });
+    await Expense.deleteMany({ createdBy: userId });
+    console.log("User with " + userId + " deleted");
+
+    res.send({ message: "User with " + userId + " deleted", success: true });
   } catch (error) {
+    console.error("Error deleting user:", error);
     res.status(500).send({ message: "Failed to delete user", success: false });
   }
 };

@@ -14,7 +14,7 @@ userRouter.use(auth);
 
 userRouter.get('/',getUserDetails);
 // incomplete routes
-userRouter.delete('/:id',deleteUser)
+userRouter.delete('/delete',deleteUser)
 
 userRouter.patch('/update',updateUser);
 

@@ -1,5 +1,6 @@
 import { Request,Response } from "express";
 import { Category } from "../models/category.model";
+import { Expense } from "../models/expense.model";
 
 const getAllCategories=async(req:Request,res:Response)=>{
     try{
@@ -44,6 +45,9 @@ const updateCategory=async(req:Request,res:Response)=>{
 const deleteCategory=async(req:Request,res:Response)=>{
     const {id}=req.params;
     try{
+        let isExpenseAvailable=await Expense.findOne({categoryId:id});
+        if(isExpenseAvailable) return res.status(400).json({success:false,message:"Category cannot be deleted as it is associated with expenses"});
+
         let cat=await Category.findByIdAndDelete(id);
         res.json({success:true,message:"Category deleted successfully",data:cat});
     }catch(err){
