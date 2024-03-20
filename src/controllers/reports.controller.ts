@@ -83,7 +83,7 @@ const getCategoryWiseReportMonth = async (req: Request, res: Response) => {
         {
           $match: {
             createdBy: userId,
-            date: { $gte: startDate, $lt: endDate } // Match date between start and end of month
+            date: { $gte: startDate, $lte: endDate } // Match date between start and end of month
           }
         },
         {
@@ -113,7 +113,7 @@ const getCategoryWiseReportMonth = async (req: Request, res: Response) => {
       ]);
   
       const expenses = await Expense.find({
-        date: { $gte: startDate, $lt: endDate }, // Match date between start and end of month
+        date: { $gte: startDate, $lte: endDate }, // Match date between start and end of month
         createdBy: userId
       }).populate('categoryId', 'categoryName').sort({date:1});
   
@@ -157,7 +157,7 @@ const getCategoryWiseReportMonth = async (req: Request, res: Response) => {
         {
           $match: {
             createdBy: userId,
-            date: { $gte: startDate, $lt: endDate } // Match date between start and end of year
+            date: { $gte: startDate, $lte: endDate } // Match date between start and end of year
           }
         },
         {
