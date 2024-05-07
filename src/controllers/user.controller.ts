@@ -5,6 +5,7 @@ import { Category } from "../models/category.model";
 import { Expense } from "../models/expense.model";
 
 const registerUser = async (req: Request, res: Response) => {
+    console.time('registerUser');
   const { firstName, lastName, email, phoneNo, password } = req.body;
   // console.log("user request = ",req.body);
   const user = await User.findOne<UserDocument>({
@@ -36,10 +37,12 @@ const registerUser = async (req: Request, res: Response) => {
     console.log("User already exists(Email,Phone No).");
     res.status(409).send({ message: "User already exists.", success: false });
   }
+   console.timeEnd('registerUser');
 };
 
 // function to login user user will provide email and password
 const authenticateUser = async (req: Request, res: Response) => {
+      console.time('authenticateUser');
   const { email, password } = req.body;
   // console.log(req.body);
   try {
@@ -68,6 +71,7 @@ const authenticateUser = async (req: Request, res: Response) => {
     console.error("Error authenticating user:", error);
     res.status(500).send({ message: "Internal server error", success: false });
   }
+      console.timeEnd('authenticateUser');
 };
 
 const deleteUser = async (req: Request, res: Response) => {
